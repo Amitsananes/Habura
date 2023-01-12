@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0f260b9b-e86c-4949-8510-e5537ca4bfe7" name="habura-staging">
+        <fileTransfer accessType="SFTP" host="164.90.219.4" port="22" sshConfigId="76b9b868-6198-4e56-9eef-0abb932fa00c" sshConfig="habura_staging@164.90.219.4:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
