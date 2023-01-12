@@ -614,6 +614,26 @@
         padding-top: 56.25%;
     }
 
+    #upload-article-shortcode-form .media_files .file-preview-row {
+        border: 1px solid #d9d9d9;
+    }
+
+    #upload-article-shortcode-form .media_files .file-preview-row td {
+        background-color: initial;
+        border: initial;
+    }
+
+    #upload-article-shortcode-form .media_files .file-preview-row td .image_row_container {
+        display: flex;
+        flex-direction: column;
+        row-gap: 10px;
+    }
+
+    #upload-article-shortcode-form .media_files .file-preview-table .file-preview-placeholder {
+        height: 87px;
+        width: 165px;
+    }
+
     .tooltip {
         position: initial;
     }

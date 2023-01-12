@@ -2,8 +2,9 @@
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
-require_once('includes/expired-cron-new.php');
-require_once('includes/upload-article-shortcode.php');
+require_once( 'includes/expired-cron-new.php' );
+require_once( 'includes/upload-article-shortcode.php' );
+require_once( 'includes/statuses.php' );
 
 // BEGIN ENQUEUE PARENT ACTION
 // AUTO GENERATED - Do not modify or remove comment markers above or below:
@@ -20,6 +21,7 @@ add_filter( 'locale_stylesheet_uri', 'chld_thm_cfg_locale_css' );
 if ( !function_exists( 'child_theme_configurator_css' ) ):
     function child_theme_configurator_css() {
         wp_enqueue_style( 'chld_thm_cfg_child', trailingslashit( get_stylesheet_directory_uri() ) . 'style.css', array( 'hello-elementor','hello-elementor','hello-elementor-theme-style' ) , "1.1.17" );
+        wp_enqueue_style( 'new-style', trailingslashit( get_stylesheet_directory_uri() ) . 'new-style.css' );
     }
 endif;
 add_action( 'wp_enqueue_scripts', 'child_theme_configurator_css', 100 );
@@ -348,9 +350,9 @@ add_shortcode( 'home_page_php_output', 'wpc_elementor_shortcode');
 function wpc_elementor_shortcode_2( $atts ) {
     // Load Home Page File
 //    echo "<pre>" . print_r(get_the_author_meta('ID'), true) . "</pre>";
-    if ( get_current_user_id() != get_the_author_meta('ID') ) {
+//    if ( get_current_user_id() != get_the_author_meta('ID') ) {
         include get_theme_file_path( '/rating-post.php' );
-    }
+//    }
 }
 add_shortcode( 'rating_post_php_output', 'wpc_elementor_shortcode_2');
 
@@ -773,107 +775,118 @@ function omertest() {
     ) );
 //    register_rest_route( 'tests/v1', '/home_posts', array(
 //        'methods' => 'GET',
-//        'callback' => 'omertest3',
+//        'callback' => 'fetch_posts_for_popup',
 //        'args' => array(),
 //    ));
 }
 add_action( 'rest_api_init', 'omertest' );
 
-function omertest3() {
-    global $wpdb;
-    $post_url = '';
+function fetch_posts_for_popup() {
+	global $wpdb;
+	$post_url = '';
 
-    // Add this variable the different time
-    $time_down_rate = get_field('time_down_rate', 10537);
-    $new_time_noco = time() + $time_down_rate;
-    // $new_time_noco = time() + (60);
-    $table_expiration1 = 'wp_expiration_time';
+	// Add this variable the different time
+	$time_down_rate = get_field( 'time_down_rate', 10537 );
+	$new_time_noco  = time() + $time_down_rate;
+	// $new_time_noco = time() + (60);
+	$table_expiration1 = 'wp_expiration_time';
 
-    $table = 'wp_rating_article';
-    $table_post = 'wp_posts';
-    $table_expiration = 'wp_expiration_time';
-    $time = time();
-//    $time = 1665040000;
+	$table            = 'wp_rating_article';
+	$table_post       = 'wp_posts';
+	$table_expiration = 'wp_expiration_time';
+	$time             = time();
+	//    $time = 1665040000;
 
-    $posts = get_posts(array(
-        'post_type'         => 'post',
-        'limit'             => '10',
-        'status'            => 'publish',
-        'posts_per_page'    => 10,
-    ));
-    $results_posts = array();
-    foreach ( $posts as $post ) {
-        $expiration_time = $wpdb->get_var("SELECT expiration_time FROM wp_expiration_time WHERE post_id = $post->ID AND (expiration_time IS NULL OR expiration_time > $time) ORDER BY id DESC LIMIT 1");
-        $ip = get_user_ip();
-        $post_author_ip = get_field( 'author_ip', $post->ID );
-        $current_user_is_author = is_user_logged_in() && get_current_user_id() == $post->post_author;
-        if ($expiration_time) {
-            $rated = $wpdb->get_var("SELECT id FROM article_raters WHERE post_id = $post->ID AND ip = '$ip'");
-            if ( (is_admin() && !$rated) || (!$rated && !$current_user_is_author && $ip != $post_author_ip) ) {
-                $post->expiration_time = $expiration_time;
-                $results_posts[] = $post;
-            }
-        } else {
-            $rating = $wpdb->get_results("SELECT * FROM $table WHERE post_id = $post->ID");
-            if ( (is_admin() && !$rating) || (!$rating && !$current_user_is_author && $ip != $post_author_ip) ) {
-                $expiration_time = $wpdb->get_var("SELECT expiration_time FROM wp_expiration_time WHERE post_id = $post->ID ORDER BY id DESC LIMIT 1");
-                $post->expiration_time = $expiration_time;
-                $results_posts[] = $post;
-            }
-        }
-    }
-//    This query is SLOW
-//    $results_posts = $wpdb->get_results( "SELECT * FROM $table_post LEFT JOIN $table_expiration ON $table_post.ID = $table_expiration.post_id WHERE post_status = 'publish' AND post_type = 'post' AND ($table_expiration.expiration_time IS NULL OR $table_expiration.expiration_time > $time)" );
+	$posts_args = array(
+		'post_type'   => 'post',
+		'limit'       => '10',
+		'post_status' => 'running',
+	);
 
-//    echo json_encode($results_posts);
-//    exit;
+	if ( is_user_logged_in() ) {
+		$posts_args['author'] = -get_current_user_id();
+	}
 
-    $ip = get_user_ip();
+	$posts         = get_posts( $posts_args );
+	$results_posts = array();
+	foreach ( $posts as $post ) {
+		//        $results_posts[] = $post->ID;
+		//        continue;
+		$expiration_time        = $wpdb->get_var( "SELECT expiration_time FROM wp_expiration_time WHERE post_id = $post->ID AND (expiration_time IS NULL OR expiration_time > $time) ORDER BY id DESC LIMIT 1" );
+		$ip                     = get_user_ip();
+		$post_author_ip         = get_field( 'author_ip', $post->ID );
+		$current_user_is_author = is_user_logged_in() && get_current_user_id() == $post->post_author;
+		if ( $expiration_time ) {
+			$rated = $wpdb->get_var( "SELECT id FROM article_raters WHERE post_id = $post->ID AND ip = '$ip'" );
+			if ( ( is_admin() && ! $rated ) || ( ! $rated && ! $current_user_is_author && $ip != $post_author_ip ) ) {
+				$post->expiration_time = $expiration_time;
+				$results_posts[]       = $post;
+			}
+		} else {
+			$rating = $wpdb->get_results( "SELECT * FROM $table WHERE post_id = $post->ID" );
+			if ( ( is_admin() && ! $rating ) || ( ! $rating && ! $current_user_is_author && $ip != $post_author_ip ) ) {
+				$expiration_time
+					                   = $wpdb->get_var( "SELECT expiration_time FROM wp_expiration_time WHERE post_id = $post->ID ORDER BY id DESC LIMIT 1" );
+				$post->expiration_time = $expiration_time;
+				$results_posts[]       = $post;
+			}
+		}
+	}
+	//    This query is SLOW
+	//    $results_posts = $wpdb->get_results( "SELECT * FROM $table_post LEFT JOIN $table_expiration ON $table_post.ID = $table_expiration.post_id WHERE post_status = 'publish' AND post_type = 'post' AND ($table_expiration.expiration_time IS NULL OR $table_expiration.expiration_time > $time)" );
 
-    if(count($results_posts) > 0) {
-        // print_r($results_posts);
-        // echo 'eeee';
-        // echo count($results_posts);
-        for ($i = count($results_posts); $i >= 0 ; $i--) {
-            $post_url = get_the_category( $results_posts[$i]->ID )[0]->slug . '/' .$results_posts[$i]->post_name;
-            if( is_null($results_posts[$i]->expiration_time) ) {
-                $wpdb->replace($table_expiration1, array( 'post_id' => strval($results_posts[$i]->ID), 'expiration_time' => $new_time_noco ), array('%d', '%d') );
-            } else {
+	//    echo json_encode($results_posts);
+	//    exit;
 
-                // print_r($results_posts[$i]);
+	$ip = get_user_ip();
 
-                $post_id = strval($results_posts[$i]->ID);
+	if ( count( $results_posts ) > 0 ) {
+		// print_r($results_posts);
+		// echo 'eeee';
+		// echo count($results_posts);
+		for ( $i = count( $results_posts ); $i >= 0; $i -- ) {
+			$post_url = get_the_category( $results_posts[ $i ]->ID )[0]->slug . '/' . $results_posts[ $i ]->post_name;
+			if ( is_null( $results_posts[ $i ]->expiration_time ) ) {
+				$wpdb->replace( $table_expiration1,
+					array( 'post_id' => strval( $results_posts[ $i ]->ID ), 'expiration_time' => $new_time_noco ),
+					array( '%d', '%d' ) );
+			} else {
+				// print_r($results_posts[$i]);
 
-                // Check if user already rated the article
-                $did_rate = count($wpdb->get_results("SELECT * FROM article_raters WHERE ip = '$ip' AND post_id = $post_id"));
+				$post_id = strval( $results_posts[ $i ]->ID );
 
-                echo json_encode(array(
-                    "post_id"=>$post_id,
-                    'ip'=>get_user_ip(),
-                    "post_url"=>$post_url,
-                    "image"=>get_the_post_thumbnail_url($post_id),
-                    "response"=>!count($wpdb->get_results("SELECT * FROM popups_show WHERE ip = '$ip' AND post_id = $post_id")) || !$did_rate
-                ));
+				// Check if user already rated the article
+				$did_rate
+					= count( $wpdb->get_results( "SELECT * FROM article_raters WHERE ip = '$ip' AND post_id = $post_id" ) );
 
-                die;
+				echo json_encode( array(
+					"post_id"  => $post_id,
+					'ip'       => get_user_ip(),
+					"post_url" => $post_url,
+					"image"    => get_the_post_thumbnail_url( $post_id ),
+					"response" => ! count( $wpdb->get_results( "SELECT * FROM popups_show WHERE ip = '$ip' AND post_id = $post_id" ) )
+					              || ! $did_rate,
+				) );
 
-                /* 			if () {
-                                echo '<a class="popup-div" href="https://wordpress-668856-2361490.cloudwaysapps.com/' . $post_url . '/?source=popup" ><div class="fnc-popup-wrap">
-                                        ' . get_the_post_thumbnail($post_id) . '
-                                        <div class="fnc-popup-container">
-                                            <div class="fnc-popup-content">
-                                                <p>נבחרת להשפיע  <br/>על כתבה שנשלחה מגולש.  <br />דרג האם לדעתךּ  <br />היא צריכה לעלות לחבּוּרֶה?</p>
-                                                <button class="fnc-popup-button">דרג עכשיו</button>
-                                            </div>
-                                        </div>
-                                    </div></a>';
+				die;
 
-                                // Insert popup show to DB
-                                // $wpdb->replace('popups_show', [ 'ip' => $ip, 'post_id' => $post_id ], [ '%s', '%d' ]);
-                            } */
-            }
-        }
-    }
+				/* 			if () {
+								echo '<a class="popup-div" href="https://wordpress-668856-2361490.cloudwaysapps.com/' . $post_url . '/?source=popup" ><div class="fnc-popup-wrap">
+										' . get_the_post_thumbnail($post_id) . '
+										<div class="fnc-popup-container">
+											<div class="fnc-popup-content">
+												<p>נבחרת להשפיע  <br/>על כתבה שנשלחה מגולש.  <br />דרג האם לדעתךּ  <br />היא צריכה לעלות לחבּוּרֶה?</p>
+												<button class="fnc-popup-button">דרג עכשיו</button>
+											</div>
+										</div>
+									</div></a>';
+
+								// Insert popup show to DB
+								// $wpdb->replace('popups_show', [ 'ip' => $ip, 'post_id' => $post_id ], [ '%s', '%d' ]);
+							} */
+			}
+		}
+	}
 }
 
 // print_r(home_page_by_rating());
@@ -943,6 +956,7 @@ function call_update_rating() {
 
     // Check if user already rated this post
     if (!count($wpdb->get_results("SELECT * FROM article_raters WHERE post_id = $post_id AND ip = '$ip'"))) {
+        update_post_meta( $post_id, 'admin_rated', true );
         // $wpdb->replace($table, array( 'post_id' => $post_id, 'numbers_of_raters' => ($numbers_of_raters+$numbers_of_raters1), 'sum_rate' => ($sum_rate+$sum_rate1)), array('%d', '%d', '%d') );
         if($numbers_of_raters >= 1) {
             $wpdb->update($table, array('sum_rate' => ($sum_rate+$sum_rate1), 'numbers_of_raters' => ($numbers_of_raters+$numbers_of_raters1)), array('post_id' => $post_id), array('%d', '%d', '%d') );
@@ -1111,8 +1125,8 @@ add_action('manage_post_posts_custom_column', function($column_key, $post_id) {
 
 
 
-add_action( 'wp_ajax_nopriv_display_popup', 'omertest3' );
-add_action( 'wp_ajax_display_popup', 'omertest3' );
+add_action( 'wp_ajax_nopriv_display_popup', 'fetch_posts_for_popup' );
+add_action( 'wp_ajax_display_popup', 'fetch_posts_for_popup' );
 
 function display_popup() {
 
@@ -1600,8 +1614,11 @@ function trigger_cronjob( $post_id ) {
         $wpdb->insert( 'wp_expiration_time', $values );
     }
 
+	update_post_meta( $post_id, 'running_end_time', time() );
+
 }
-add_action( 'publish_post', 'trigger_cronjob', 10, 1 );
+
+add_action( 'running_post', 'trigger_cronjob', 10, 1 );
 
 function author_load_more_posts_func() {
     if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], 'author_more_posts')) {

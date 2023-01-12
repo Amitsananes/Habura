@@ -22,7 +22,7 @@ if ($result || !$has_rating) {
     ?>
 
     <?php // Only let users rate if they did not rate yet, the current user is not the author and if entered the page from the popup ?>
-    <?php if ( (is_admin() && !$did_rate) || (!$did_rate && $ip != $post_author_ip && isset($_GET['source']) && $_GET['source'] == 'popup')) : ?>
+        <?php if ( (is_admin() && !$did_rate) || (!$did_rate && $ip != $post_author_ip && isset($_GET['source']) && $_GET['source'] == 'popup')) : ?>
         <div class="rating-wrap rating-1">
             <div class="rating-content">
                 <div class="rating-main">

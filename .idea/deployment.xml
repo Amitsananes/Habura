@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="habura-staging" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" autoUpload="On explicit save action" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="habura-staging">
         <serverdata>
           <mappings>
-            <mapping deploy="/public_html/wp-content/themes/hello-elementor-child" local="$PROJECT_DIR$/wp-content/themes/hello-elementor-child" web="/" />
+            <mapping deploy="/public_html/wp-content/themes/hello-elementor-child" local="$PROJECT_DIR$" web="/" />
           </mappings>
         </serverdata>
       </paths>

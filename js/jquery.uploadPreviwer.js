@@ -123,8 +123,12 @@
                 config.rowTemplate = function(options) {
                     return "<tr class='" + config.tableRowClass + "'>" +
                         "<td>" + "<img src='" + options.src + "' class='" + options.placeholderCssClass + "' />" + "</td>" +
-                        "<td>" + "<p class='error'>ערך נדרש</p><input type='text' class='file_alt_field' placeholder='קרדיט *' name='files_alts[]'/>" + "</td>" +
-                        "<td>" + "<input type='text' class='file_description_field' maxlength='120' placeholder='תיאור' name='files_descriptions[]'/>" + "</td>" +
+                        "<td>" +
+                            "<div class='image_row_container'>" +
+                                "<p class='error'>ערך נדרש</p><input type='text' class='file_alt_field' placeholder='קרדיט *' name='files_alts[]'/>" +
+                                "<input type='text' class='file_description_field' maxlength='120' placeholder='תיאור' name='files_descriptions[]'/>" +
+                            "</div>" +
+                        "</td>" +
                         "<td class='filename'>" + options.name + "</td>" +
                         "<td class='filesize'>" + options.size + "</td>" +
                         // "<td class='filesize_human'>" + options.size_human + "</td>" +

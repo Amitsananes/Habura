@@ -1,0 +1,43 @@
+grumphp:
+  fixer:
+    enabled: true
+    fix_by_default: true
+  tasks:
+    phpcs:
+      standard: Wordpress-Extra
+      report: full
+      ignore_patterns: ["*/vendor/*"]
+      triggered_by: [php]
+      exclude: []
+    eslint:
+      bin: node_modules/.bin/eslint
+      triggered_by: [ js ]
+      config: .eslintrc.json
+      ignore_path: .eslintignore
+      debug: false/
+      format: ~
+      max_warnings: ~
+      no_eslintrc: false
+      quiet: false
+    stylelint:
+      bin: node_modules/.bin/stylelint
+      triggered_by: [pcss]
+      config: .stylelintrc.json
+      config_basedir: ~/
+      ignore_path: .eslintignore
+      ignore_pattern: ~
+      syntax: ~
+      custom_syntax: ~
+      ignore_disables: ~
+      disable_default_ignores: ~
+      cache: ~
+      cache_location: ~
+      formatter: ~
+      custom_formatter: ~
+      quiet: ~
+      color: ~
+      report_needless_disables: ~
+      report_invalid_scope_disables: ~
+      report_descriptionless_disables: ~
+      max_warnings: ~
+      output_file: ~

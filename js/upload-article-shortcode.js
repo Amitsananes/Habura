@@ -69,7 +69,9 @@ jQuery(function($) {
         text = text.replace(/^\d+$/i,"");
 
         // Remove emails
-        text = text.replace(/([^.@\s]+)(\.[^.@\s]+)*@([^.@\s]+\.)+([^.@\s]+)/,"");
+        // text = text.replace(/([^.@\s]+)(\.[^.@\s]+)*@([^.@\s]+\.)+([^.@\s]+)/,"");
+        // text = text.replace(/&(?!#?[xX]?(?:[0-9a-fA-F]+|\w+);)([^;])&/gi, "$1");
+        text = text.replace(/&#8226;|&middot;/gi, "");
 
         // Remove links
         text = text.replace(/[(http|ftp|https):\/\/]*([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/i,"");
@@ -79,7 +81,7 @@ jQuery(function($) {
         text = text.replace(/[&\\@^#+()$~%*{}]/g, '');
 
         // Remove Emojis
-        text = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
+        // text = text.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
 
         text = text.replace(/<(?!\/?[br|strong|em|span]\s*\/?)[^>]+>/g, '');
 
