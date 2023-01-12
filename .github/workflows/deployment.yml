@@ -2,7 +2,7 @@ name: Digital Ocean deployment
 on:
   push:
     branches:
-      - main
+      - staging
 jobs:
   deploy:
     name: Deploy
