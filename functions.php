@@ -1665,3 +1665,61 @@ function author_load_more_posts_func() {
 }
 add_action( 'wp_ajax_author_load_more_posts', 'author_load_more_posts_func' );
 add_action( 'wp_ajax_nopriv_author_load_more_posts', 'author_load_more_posts_func' );
+
+class Habura {
+	const HOME_PAGE_STRING = "עמוד הבית";
+	const AVATAR_STRING = "תמונת הכותב/ת";
+	const PUBLISHED = "פורסם";
+	const MORE_HEADLINES = "כותרות נוספות";
+}
+
+/**
+ * Print post breadcrumbs
+ *
+ * @param $post_id
+ *
+ * @return void
+ */
+function nm_print_breadcrumbs($post_id) {
+	$term_obj = get_the_category($post_id)[0];
+	$term_id = $term_obj->term_id;
+	$term_link = get_term_link($term_id);
+	$term_org_name = $term_obj->name;
+	$term_custom_name = get_field('cat_name', 'term_' . $term_id);
+	$term_name = $term_custom_name ?: $term_org_name;
+
+	echo '<a href="'. get_home_url() .'" class="breadcrumb-text tw-text-gray-1100">'. Habura::HOME_PAGE_STRING . '</a>' .
+	     ' » ' .
+	     '<a href="'. $term_link .'" class="breadcrumb-text tw-text-gray-1100">'. $term_name. '</a>';
+}
+
+/**
+ * Print post breadcrumbs
+ *
+ * @return string
+ */
+function nm_get_post_meta(): string {
+    $author_display_name = get_the_author_meta( 'display_name' );
+    $author_email = get_the_author_meta( 'email' );
+    $author_avatar = get_avatar($author_email, 55, '', Habura::AVATAR_STRING);
+	$post_publish_date = get_the_date( 'd/m/y H:i' );
+    ob_start();
+    ?>
+    <div class="tw-inline-flex tw-items-end tw-pb-1 post-meta-box">
+        <div class="tw-ml-3">
+			<?php echo $author_avatar; ?>
+        </div>
+        <div>
+            <div class="tw-text-gray-1100 tw-font-bold"><?php echo $author_display_name; ?></div>
+            <div class="tw-text-sm">
+                <span><?php echo Habura::PUBLISHED;?></span>
+				<?php echo $post_publish_date; ?>
+            </div>
+        </div>
+    </div>
+
+	<?php
+    return ob_get_clean();
+}
+
+
