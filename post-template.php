@@ -23,22 +23,20 @@ get_header();
 	            <?php the_post_thumbnail(); ?>
 	            <?php echo get_field('image_credit', get_post_thumbnail_id()); ?>
             </div>
-            <?php include get_stylesheet_directory() . '/templates/join-habura-1.php'; ?>
+            <?php include THEME_DIR . '/templates/join-habura-1.php'; ?>
             <div class="tw-mb-6">
-	            <?php
-	            the_content();
-	            ?>
+	            <?php the_content(); ?>
             </div>
-	        <?php include get_stylesheet_directory() . '/templates/join-habura-2.php'; ?>
+	        <?php include THEME_DIR . '/templates/join-habura-2.php'; ?>
         </div>
         <div class="lg:tw-px-10 lg:tw-w-1/3">
-            <h2 class="tw-bg-blue-500 tw-text-white tw-text-center tw-text-2xl tw-font-bold"><?php echo
-                Habura::MORE_HEADLINES;
-            ?></h2>
+            <?php include THEME_DIR . '/templates/article-sidebar.php'; ?>
         </div>
     </div>
+    <div class="tw-w-full">
+		<?php include THEME_DIR . '/templates/article-author-more-posts.php'; ?>
+    </div>
 </div>
-
 
 <?php
 get_footer();

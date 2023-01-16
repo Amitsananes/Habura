@@ -9,6 +9,40 @@ require_once( 'includes/statuses.php' );
 // BEGIN ENQUEUE PARENT ACTION
 // AUTO GENERATED - Do not modify or remove comment markers above or below:
 
+define( "THEME_DIR", get_stylesheet_directory() );
+
+class Habura {
+	const HOME_PAGE_STRING = "עמוד הבית";
+	const AVATAR_STRING = "תמונת הכותב/ת";
+	const PUBLISHED = "פורסם";
+	const MORE_HEADLINES = "כותרות נוספות";
+	const MORE_INTERESTING_HEADLINES = "עוד כותרות מעניינות";
+	const MORE_ARTICLES = "עוד כתבות";
+	const THEME_SETTINGS = "אפשרויות תבנית";
+	const BANNERS = "באנרים";
+	const PROMOTED = "מקודם";
+}
+
+if( function_exists('acf_set_options_page_capability') ) {
+	acf_set_options_page_capability('manage_options');
+}
+
+if( function_exists('acf_add_options_page') ) {
+	acf_add_options_page(array(
+		'page_title'    => 'Theme General Settings',
+		'menu_title'    => 'Theme Settings',
+		'menu_slug'     => 'theme-general-settings',
+		'capability'    => 'edit_posts',
+		'redirect'      => true
+	));
+
+	acf_add_options_sub_page(array(
+		'page_title'    => 'Theme Banners Settings',
+		'menu_title'    => 'Banners',
+		'parent_slug'   => 'theme-general-settings',
+	));
+}
+
 if ( !function_exists( 'chld_thm_cfg_locale_css' ) ):
     function chld_thm_cfg_locale_css( $uri ){
         if ( empty( $uri ) && is_rtl() && file_exists( get_template_directory() . '/rtl.css' ) )
@@ -1666,13 +1700,6 @@ function author_load_more_posts_func() {
 add_action( 'wp_ajax_author_load_more_posts', 'author_load_more_posts_func' );
 add_action( 'wp_ajax_nopriv_author_load_more_posts', 'author_load_more_posts_func' );
 
-class Habura {
-	const HOME_PAGE_STRING = "עמוד הבית";
-	const AVATAR_STRING = "תמונת הכותב/ת";
-	const PUBLISHED = "פורסם";
-	const MORE_HEADLINES = "כותרות נוספות";
-}
-
 /**
  * Print post breadcrumbs
  *
@@ -1722,4 +1749,39 @@ function nm_get_post_meta(): string {
     return ob_get_clean();
 }
 
+/**
+ * Get a mixture of posts and ads
+ *
+ * @return array
+ */
+function nm_get_posts($from_same_term = false): array {
+	$recent_args = array(
+		"posts_per_page" => 3,
+		"orderby"        => "date",
+		"order"          => "DESC",
+	);
+	$recent_args['tax_query']  = array();
 
+    if ($from_same_term) {
+        $post_term_id = get_the_category()[0] -> term_id;
+        array_push($recent_args['tax_query'],
+            array(
+	        'taxonomy' => 'category',
+	        'field'    => 'id',
+	        'terms'    => array($post_term_id),
+        ) );
+    }
+
+	$recent_query = new WP_Query( $recent_args );
+	$recent_posts = $recent_query->posts;
+
+	$payed_args = array(
+		"post_type" => "adv",
+		'orderby'   => 'rand',
+		"posts_per_page" => 2,
+	);
+	$payed_query = new WP_Query( $payed_args );
+	$payed_posts = $payed_query->posts;
+
+	return [$recent_posts[0], $payed_posts[0], $recent_posts[1], $recent_posts[2], $payed_posts[1]];
+}
