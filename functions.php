@@ -21,6 +21,7 @@ class Habura {
 	const THEME_SETTINGS = "אפשרויות תבנית";
 	const BANNERS = "באנרים";
 	const PROMOTED = "מקודם";
+	const MORE_ARTICLES_BY = "כתבות נוספות של";
 }
 
 if( function_exists('acf_set_options_page_capability') ) {
@@ -1785,3 +1786,122 @@ function nm_get_posts($from_same_term = false): array {
 
 	return [$recent_posts[0], $payed_posts[0], $recent_posts[1], $recent_posts[2], $payed_posts[1]];
 }
+
+
+function nm_article_scripts() {
+	if( is_single() )
+	{
+		wp_enqueue_script( 'article-infinite-scroll', get_stylesheet_directory_uri() . '/js/article-infinite-scroll.js',
+            array(), '1.0.0',
+            true );
+		wp_localize_script('article-infinite-scroll', 'article_ajax', array(
+			'nonce' => wp_create_nonce('article_more_posts'),
+			'action' => 'article_load_more_posts',
+			'article_id' => get_the_ID(),
+		));
+	}
+}
+add_action( 'wp_enqueue_scripts', 'nm_article_scripts' );
+
+
+/**
+ * Article load more posts
+ *
+ * @return void
+ */
+function article_load_more_posts_func() {
+	if (!isset($_REQUEST['nonce']) || !wp_verify_nonce($_REQUEST['nonce'], 'article_more_posts')) {
+		wp_send_json_error(array(
+			'message' => 'Wrong nonce',
+		));
+	}
+
+
+	if (!isset($_REQUEST['article_id'])) {
+		wp_send_json_error(array(
+			'message' => 'No author id',
+		));
+	}
+
+	if (isset($_REQUEST['page'])) {
+		$page = $_REQUEST['page'];
+	}
+    $article_term_id = get_the_terms($_REQUEST['article_id'],'category')[0] ->term_id;
+
+	$ads_query_args = array(
+		'post_type'      => 'adv',
+		"posts_per_page" => 2,
+		'paged' => $page,
+		"post_status" => "publish",
+	);
+	$ads_query = new WP_Query( $ads_query_args );
+	$ads = $ads_query->posts;
+
+	$ads_processed = array();
+	foreach ( $ads as $ad_item ) {
+		$ad_item = array(
+			'permalink' => get_permalink($ad_item->ID),
+			'thumbnail' => get_the_post_thumbnail_url($ad_item->ID),
+			'title' => $ad_item->post_title,
+			'excerpt' => $ad_item->post_excerpt,
+			'isAd' => true
+		);
+		$ads_processed[] = $ad_item;
+	}
+	wp_reset_postdata();
+	shuffle( $ads_processed );
+
+	$posts_query_args = array(
+        "post_type" => "post",
+		"posts_per_page" => count($ads_processed) === 2 ? 4 : 6,
+        'paged' => $page,
+		"post_status" => "publish",
+		"orderby"        => "date",
+		"order"          => "DESC",
+        "tax_query" => array(
+	        array(
+		        'taxonomy' => 'category',
+		        'field'    => 'id',
+		        'terms'    => array($article_term_id),
+	        )
+        )
+	);
+	$posts_query = new WP_Query( $posts_query_args );
+	$posts = $posts_query->posts;
+
+	$posts_processed = array();
+	foreach ( $posts as $post_item ) {
+		$post_item = array(
+			'permalink' => get_permalink($post_item->ID),
+			'thumbnail' => get_the_post_thumbnail_url($post_item->ID),
+			'title' => $post_item->post_title,
+			'excerpt' => $post_item->post_excerpt,
+			'author_fname' => get_the_author_meta( 'first_name', $post_item->post_author ),
+			'author_lname' => get_the_author_meta( 'last_name', $post_item->post_author ),
+		);
+		$posts_processed[] = $post_item;
+	}
+    wp_reset_postdata();
+
+    $data = $posts_processed;
+
+
+    if (count($ads_processed) === 2 && !empty($ads_processed[0])) {
+        $pos = 1;
+        $val = $ads_processed[0];
+        $data = array_merge(array_slice($posts_processed, 0, $pos), array($val), array_slice
+        ($posts_processed,
+            $pos));
+    }
+
+	if (count($ads_processed) === 2 && !empty($ads_processed[1])) {
+		$pos                  = 2;
+		$val                  = $ads_processed[1];
+		$data = array_merge( array_slice( $data, 0, $pos ), array( $val ), array_slice(
+			$data, $pos ) );
+	}
+
+	wp_send_json_success($data);
+}
+add_action( 'wp_ajax_article_load_more_posts', 'article_load_more_posts_func' );
+add_action( 'wp_ajax_nopriv_article_load_more_posts', 'article_load_more_posts_func' );
