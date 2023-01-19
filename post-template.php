@@ -10,7 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 get_header();
 ?>
 
-
 <div class="tw-container tw-mx-auto tw-mt-6">
     <div class="nm-layout">
         <aside class="nm-social-bar">
@@ -36,6 +35,7 @@ get_header();
                 </div>
             </div>
 			  <?php require THEME_DIR . '/templates/join-habura-2.php'; ?>
+              <?php echo do_shortcode('[rating_post_php_output]');?>
 		</main>
 		<aside class="nm-side-bar" style="top: 5rem;">
 			<?php require THEME_DIR . '/partials/article-sidebar.php'; ?>
@@ -48,6 +48,9 @@ get_header();
 		<?php require THEME_DIR . '/partials/article-infinite-posts.php'; ?>
 	</section>
 </div>
+
+<?php require THEME_DIR . '/partials/article-running-strip-1.php'; ?>
+<?php require THEME_DIR . '/partials/article-running-strip-2.php'; ?>
 
 <?php
 get_footer();

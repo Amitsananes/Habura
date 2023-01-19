@@ -6,7 +6,10 @@ $banner_content = $banner_data['banner_join_1_content'];
 $banner_button = $banner_data['banner_join_1_button'];
 ?>
 
-<a href="<?php echo esc_url($banner_button['url']);?>" class="nm-join" style="background-image: url('<?php echo
+<a
+        href="<?php echo esc_url($banner_button['url']);?>"
+        class="nm-join"
+        style="background-image: url('<?php echo
 $banner_bg_image;?>')">
     <div class="tw-w-3/4">
         <h2><?php echo $banner_title; ?></h2>

@@ -29,6 +29,7 @@ class Habura {
 	const SHARE_ON_WHATSAPP = "שתפ/י בווטסאפ";
 	const SHARE_ON_EMAIL = "שתפ/י באימייל";
 	const RECOMMENDATION = "המלצה";
+	const RUNNING_STATUS = "תוכן בבדיקה טרם עלה לאתר";
 }
 
 if( function_exists('acf_set_options_page_capability') ) {
