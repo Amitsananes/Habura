@@ -2,9 +2,11 @@
 // Exit if accessed directly
 if ( !defined( 'ABSPATH' ) ) exit;
 
+require_once( 'includes/acf-fields.php' );
 require_once( 'includes/expired-cron-new.php' );
 require_once( 'includes/upload-article-shortcode.php' );
 require_once( 'includes/statuses.php' );
+require_once( 'includes/social-share.php' );
 
 // BEGIN ENQUEUE PARENT ACTION
 // AUTO GENERATED - Do not modify or remove comment markers above or below:
@@ -22,6 +24,11 @@ class Habura {
 	const BANNERS = "באנרים";
 	const PROMOTED = "מקודם";
 	const MORE_ARTICLES_BY = "כתבות נוספות של";
+	const SHARE_ON_TWITTER = "שתפ/י בטוויטר";
+	const SHARE_ON_FACEBOOK = "שתפ/י בפייסבוק";
+	const SHARE_ON_WHATSAPP = "שתפ/י בווטסאפ";
+	const SHARE_ON_EMAIL = "שתפ/י באימייל";
+	const RECOMMENDATION = "המלצה";
 }
 
 if( function_exists('acf_set_options_page_capability') ) {
@@ -36,12 +43,17 @@ if( function_exists('acf_add_options_page') ) {
 		'capability'    => 'edit_posts',
 		'redirect'      => true
 	));
-
 	acf_add_options_sub_page(array(
 		'page_title'    => 'Theme Banners Settings',
 		'menu_title'    => 'Banners',
 		'parent_slug'   => 'theme-general-settings',
 	));
+	acf_add_options_sub_page(array(
+		'page_title'    => 'Links Settings',
+		'menu_title'    => 'Links',
+		'parent_slug'   => 'theme-general-settings',
+	));
+
 }
 
 if ( !function_exists( 'chld_thm_cfg_locale_css' ) ):
@@ -1905,3 +1917,13 @@ function article_load_more_posts_func() {
 }
 add_action( 'wp_ajax_article_load_more_posts', 'article_load_more_posts_func' );
 add_action( 'wp_ajax_nopriv_article_load_more_posts', 'article_load_more_posts_func' );
+
+/**
+ * Line break shortcode
+ *
+ * @return string
+ */
+function nm_line_break_shortcode(): string {
+	return '<br />';
+}
+add_shortcode( 'br', 'nm_line_break_shortcode' );

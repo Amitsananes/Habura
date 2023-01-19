@@ -9,6 +9,9 @@ module.exports = {
 		xxl: '1630px',
 	},
 	theme: {
+		container: {
+			center: true,
+		},
 		extend: {
 			colors: {
 				black: '#000000',

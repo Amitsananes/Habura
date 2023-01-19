@@ -17,5 +17,28 @@
 		}
 	}
 
+	.nm-layout {
+		@apply tw-flex tw-items-start;
 
+		@screen lg {
+			margin: 0 -2rem 3.5rem;
+		}
+
+		.nm-main-bar {
+			@apply tw-flex-1;
+
+			@screen lg {
+				padding-left: 2rem;
+			}
+		}
+
+		.nm-side-bar {
+			@apply tw-sticky;
+
+			@screen lg {
+				@apply tw-w-1/3;
+				padding: 0 2rem;
+			}
+		}
+	}
 }

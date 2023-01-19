@@ -1,11 +1,25 @@
 @import "tailwindcss/components";
 
 @import './general.pcss';
+@import './entry-content.pcss';
 @import './text.pcss';
 @import './single.pcss';
+@import './buttons.pcss';
+@import './social-bar.pcss';
 @import './join.pcss';
 @import './images.pcss';
 @import './box-content.pcss';
 
 @import "tailwindcss/utilities";
+
+
+@layer components {
+	.tw-container {
+		max-width: 600px;
+
+		@screen xl {
+			max-width: 1140px;
+		}
+	}
+}
 

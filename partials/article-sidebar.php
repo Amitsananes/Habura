@@ -25,7 +25,7 @@ foreach ( $recent_posts as $key => $_post ) {
 		continue;
 	}
 
-	if ( 3 === $key ) {
+	if ( 4 === $key ) {
 		$ad_id = $ads_posts_ids[1];
 		include THEME_DIR . '/templates/ad-content.php';
 		continue;

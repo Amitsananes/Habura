@@ -1,0 +1,47 @@
+.nm-social-bar {
+	width: 4.5625rem;
+	position: sticky;
+	top: 45vh;
+
+	a {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: relative;
+		margin: 0 auto 1rem;
+		color: white;
+		width: 1.875rem;
+		height: 1.875rem;
+		&:before {
+			content: '';
+			position: absolute;
+			width: 1.875rem;
+			height: 1.875rem;
+			border-radius: 50%;
+		}
+		&.whatsapp {
+			&:before {
+				background-color: #25d366;
+			}
+		}
+		&.facebook {
+			&:before {
+				background-color: #3b5998;
+			}
+		}
+		&.twitter {
+			&:before {
+				background-color: #1da1f2;
+			}
+		}
+		&.email {
+			&:before {
+				background-color: #ea4335;
+			}
+		}
+
+		i {
+			position: relative;
+		}
+	}
+}

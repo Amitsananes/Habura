@@ -30,7 +30,7 @@ foreach ( $recent_author_posts as $key => $recent_author_post ) {
 		continue;
 	}
 
-	if ( 3 === $key ) {
+	if ( 4 === $key ) {
 		$ad_id = $ads_posts_ids[1];
 		include THEME_DIR . '/templates/ad-content-2.php';
 		echo '</div>';
